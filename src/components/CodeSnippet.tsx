@@ -42,9 +42,6 @@ export const CodeSnippet: React.FC<CodeSnippetProps> = ({
                 key={index} 
                 className={`code-line ${isHighlighted ? 'highlighted' : ''} transition-all duration-200`}
               >
-                <span className="line-number text-gray-400 select-none">
-                  {lineNumber.toString().padStart(lineNumberWidth, ' ')}
-                </span>
                 <span className="line-content">{line}</span>
               </div>
             );
