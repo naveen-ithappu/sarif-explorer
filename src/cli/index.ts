@@ -2,7 +2,7 @@
 
 import { Command } from 'commander';
 import chalk from 'chalk';
-import { generateHtmlReport } from '../generators/html-generator.js';
+import { generateReactHtmlReport } from '../generators/react-html-generator.js';
 import { parseSarifFile } from '../core/sarif-parser.js';
 import { validateInputFile, validateOutputPath } from '../utils/validators.js';
 
@@ -60,7 +60,7 @@ program
         console.log(chalk.blue(`🔄 Generating HTML report...`));
       }
 
-      await generateHtmlReport(sarifData, output);
+      await generateReactHtmlReport(sarifData, output);
 
       console.log(chalk.green(`✅ SARIF report generated successfully!`));
       console.log(chalk.blue(`📄 Output file: ${output}`));

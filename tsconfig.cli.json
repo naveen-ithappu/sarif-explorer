@@ -13,16 +13,20 @@
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
-    "noEmit": false
+    "noEmit": false,
+    "jsx": "react-jsx",
+    "lib": ["ES2020", "DOM", "DOM.Iterable"]
   },
   "include": [
     "src/cli/**/*",
     "src/core/**/*",
-    "src/generators/**/*"
+    "src/generators/**/*",
+    "src/components/**/*",
+    "src/types/**/*"
   ],
+
   "exclude": [
     "src/app/**/*",
-    "src/components/**/*",
     "node_modules",
     "dist"
   ]

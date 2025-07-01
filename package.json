@@ -8,13 +8,9 @@
   },
   "type": "module",
   "scripts": {
-    "dev": "next dev --turbopack",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
-    "build:cli": "tsc -p tsconfig.cli.json",
-    "build:all": "npm run build && npm run build:cli",
-    "prepublishOnly": "npm run build:all"
+    "lint": "eslint src/**/*.{ts,tsx}",
+    "build:cli": "tsc -p tsconfig.cli.json && mkdir -p dist/generators && cp src/generators/styles.css src/generators/scripts.js dist/generators/",
+    "prepublishOnly": "npm run build:cli"
   },
   "keywords": [
     "sarif",
@@ -29,7 +25,6 @@
   "dependencies": {
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "next": "15.3.4",
     "commander": "^12.0.0",
     "chalk": "^5.3.0"
   },
@@ -38,10 +33,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@tailwindcss/postcss": "^4",
-    "tailwindcss": "^4",
     "eslint": "^9",
-    "eslint-config-next": "15.3.4",
     "@eslint/eslintrc": "^3"
   },
   "engines": {
@@ -54,6 +46,5 @@
   "bugs": {
     "url": "https://github.com/yourusername/sarif-explorer/issues"
   },
-  "homepage": "https://github.com/yourusername/sarif-explorer#readme",
-  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
+  "homepage": "https://github.com/yourusername/sarif-explorer#readme"
 }
