@@ -15,33 +15,73 @@ interface FileItemProps {
   violations: Violation[];
   isSelected: boolean;
   onClick: () => void;
+  index: number;
 }
 
-const FileItem: React.FC<FileItemProps> = ({ file, violations, isSelected, onClick }) => {
+const FileItem: React.FC<FileItemProps> = ({ file, violations, isSelected, onClick, index }) => {
   const errorCount = violations.filter(v => v.level === 'error').length;
   const warningCount = violations.filter(v => v.level === 'warning').length;
   const infoCount = violations.filter(v => v.level === 'info').length;
   
-  let countClass = 'bg-red-500';
-  let count = errorCount;
-  if (errorCount === 0 && warningCount > 0) {
-    countClass = 'bg-orange-500';
-    count = warningCount;
-  } else if (errorCount === 0 && warningCount === 0 && infoCount > 0) {
-    countClass = 'bg-blue-500';
-    count = infoCount;
+  // Determine the primary violation type for color coding
+  let primaryLevel = 'info';
+  let primaryCount = infoCount;
+  if (errorCount > 0) {
+    primaryLevel = 'error';
+    primaryCount = errorCount;
+  } else if (warningCount > 0) {
+    primaryLevel = 'warning';
+    primaryCount = warningCount;
   }
 
   return (
     <div 
-      className={`file-item ${isSelected ? 'active' : ''}`}
+      id={`file-item-${index}`}
+      className={`file-item group relative mb-3 ${isSelected ? 'active' : ''}`}
       onClick={onClick}
+      data-filename={file}
     >
-      <div className="px-4 py-3">
-        <div className="font-medium text-gray-900 text-sm mb-1 break-all">{file}</div>
-        <div className="flex justify-between items-center text-xs text-gray-500">
-          <span>{violations.length} violations</span>
-          <span className={`violation-count ${countClass}`}>{count}</span>
+      <div className={`bg-white border rounded-xl p-6 cursor-pointer transition-all duration-300 hover:border-gray-300 hover:shadow-sm ${
+        isSelected 
+          ? 'border-blue-300 shadow-lg bg-blue-50 ring-2 ring-blue-100' 
+          : 'border-gray-200'
+      }`}>
+        <div className="flex items-start justify-between mb-4">
+          <div className="flex-1 min-w-0">
+            <div className="file-name font-medium text-gray-900 text-sm mb-3 leading-relaxed break-all">{file}</div>
+            <div className="flex items-center gap-3 text-xs text-gray-500">
+              <span className="flex items-center gap-2">
+                <div className={`w-1.5 h-1.5 rounded-full ${
+                  primaryLevel === 'error' ? 'bg-red-500' :
+                  primaryLevel === 'warning' ? 'bg-orange-500' :
+                  'bg-blue-500'
+                }`}></div>
+                {violations.length} violations
+              </span>
+            </div>
+          </div>          
+        </div>
+        
+        {/* Progress bar for violation distribution */}
+        <div className="flex h-1 rounded-full bg-gray-100 overflow-hidden">
+          {errorCount > 0 && (
+            <div 
+              className="bg-red-400 h-full" 
+              style={{ width: `${(errorCount / violations.length) * 100}%` }}
+            ></div>
+          )}
+          {warningCount > 0 && (
+            <div 
+              className="bg-orange-400 h-full" 
+              style={{ width: `${(warningCount / violations.length) * 100}%` }}
+            ></div>
+          )}
+          {infoCount > 0 && (
+            <div 
+              className="bg-blue-400 h-full" 
+              style={{ width: `${(infoCount / violations.length) * 100}%` }}
+            ></div>
+          )}
         </div>
       </div>
     </div>
@@ -65,15 +105,14 @@ export const FileTree: React.FC<FileTreeProps> = ({
 
   if (files.length === 0) {
     return (
-      <div className="w-80 bg-white border-r border-gray-200 flex flex-col">
-        <div className="p-4 border-b border-gray-200 bg-gray-50">
-          <h3 className="text-lg font-semibold text-gray-900 mb-3">📁 Files with Violations</h3>
+      <div id="file-tree" className="w-96 bg-white border-r border-gray-100 flex flex-col h-full">
+        <div className="p-6 border-b border-gray-100 bg-gray-50 flex-shrink-0">
+          <h3 className="text-xl font-light text-gray-900 mb-4">Files with Violations</h3>
         </div>
         <div className="flex-1 flex items-center justify-center p-8">
           <div className="text-center">
-            <div className="text-4xl mb-4">🎉</div>
-            <h2 className="text-xl font-semibold text-gray-900 mb-2">No Files with Issues</h2>
-            <p className="text-gray-600">All files are compliant!</p>
+            <h2 className="text-2xl font-light text-gray-900 mb-3">No Files with Issues</h2>
+            <p className="text-gray-500 text-lg">All files are compliant!</p>
           </div>
         </div>
       </div>
@@ -81,30 +120,34 @@ export const FileTree: React.FC<FileTreeProps> = ({
   }
 
   return (
-    <div className="w-80 bg-white border-r border-gray-200 flex flex-col">
-      <div className="p-4 border-b border-gray-200 bg-gray-50">
-        <h3 className="text-lg font-semibold text-gray-900 mb-3">📁 Files with Violations</h3>
-        <input
-          type="text"
-          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-          placeholder="Search files..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm((e.target as HTMLInputElement).value)}
-        />
+    <div id="file-tree" className="w-96 bg-white border-r border-gray-100 flex flex-col h-full">
+      <div className="p-6 border-b border-gray-100 bg-gray-50 flex-shrink-0">
+        <h3 className="text-xl font-light text-gray-900 mb-4">Files with Violations</h3>
+        <div className="relative">
+          <input
+            id="file-search-input"
+            type="text"
+            className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-gray-300 focus:border-gray-300 transition-all duration-200"
+            placeholder="Search files..."
+            value={searchTerm}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
+          />
+        </div>
       </div>
-      <div className="flex-1 overflow-y-auto">
-        {filteredFiles.map(file => (
+      <div id="file-list" className="flex-1 overflow-y-auto p-4 min-h-0">
+        {filteredFiles.map((file, index) => (
           <FileItem
             key={file}
             file={file}
             violations={fileViolations[file]}
             isSelected={selectedFile === file}
             onClick={() => onFileSelect(file)}
+            index={index}
           />
         ))}
         {filteredFiles.length === 0 && searchTerm && (
-          <div className="p-4 text-center text-gray-500 italic">
-            <p>No files match "{searchTerm}"</p>
+          <div id="no-results" className="text-center py-12">
+            <p className="text-gray-500 text-lg">No files match "{searchTerm}"</p>
           </div>
         )}
       </div>

@@ -9,14 +9,15 @@ const __dirname = dirname(__filename);
  * Generate the complete HTML document with embedded styles and scripts
  */
 export function generateHtmlDocument(bodyHtml: string): string {
-  const stylesPath = join(__dirname, 'styles.css');
-  const scriptsPath = join(__dirname, 'scripts.js');
-  
-  // Read the CSS and JS files
-  const styles = readFileSync(stylesPath, 'utf8');
-  const scripts = readFileSync(scriptsPath, 'utf8');
-  
-  return `<!DOCTYPE html>
+  try {
+    const stylesPath = join(__dirname, 'styles.css');
+    const scriptsPath = join(__dirname, 'scripts.js');
+    
+    // Read the CSS and JS files
+    const styles = readFileSync(stylesPath, 'utf8');
+    const scripts = readFileSync(scriptsPath, 'utf8');
+    
+    return `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -34,4 +35,24 @@ export function generateHtmlDocument(bodyHtml: string): string {
     </script>
 </body>
 </html>`;
+  } catch (error) {
+    console.error('Error reading CSS or JS files:', error);
+    
+    // Fallback: return HTML without embedded styles and scripts
+    return `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SARIF Report Viewer</title>
+</head>
+<body>
+    <div id="root">${bodyHtml}</div>
+    
+    <script>
+        console.error('JavaScript not loaded due to file reading error');
+    </script>
+</body>
+</html>`;
+  }
 } 

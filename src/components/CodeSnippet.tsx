@@ -20,17 +20,19 @@ export const CodeSnippet: React.FC<CodeSnippetProps> = ({
   const lineNumberWidth = maxLineNumber.toString().length;
 
   return (
-    <div className="mt-4">
-      <div className="bg-gray-100 px-3 py-2 rounded-t-md border border-gray-200 flex justify-between items-center text-xs">
-        <span className="language-badge">{language}</span>
+    <div className="mt-6">
+      <div className="bg-gray-100 px-4 py-3 rounded-t-xl border border-gray-200 flex justify-between items-center text-sm">
+        <span className="language-badge bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-xs font-medium">
+          {language}
+        </span>
         {highlightLine && (
           <span className="text-gray-600">
             Highlighted: Line {highlightLine}
           </span>
         )}
       </div>
-      <div className="bg-gray-900 text-gray-100 rounded-b-md border border-gray-200 overflow-x-auto">
-        <pre className="p-4 m-0 font-mono text-sm leading-relaxed">
+      <div className="bg-white text-gray-900 rounded-b-xl border border-gray-200 overflow-hidden shadow-sm">
+        <pre className="p-6 m-0 font-mono text-sm leading-relaxed">
           {lines.map((line, index) => {
             const lineNumber = startLine + index;
             const isHighlighted = lineNumber === highlightLine;
@@ -38,9 +40,9 @@ export const CodeSnippet: React.FC<CodeSnippetProps> = ({
             return (
               <div 
                 key={index} 
-                className={`code-line ${isHighlighted ? 'highlighted' : ''}`}
+                className={`code-line ${isHighlighted ? 'highlighted' : ''} transition-all duration-200`}
               >
-                <span className="line-number">
+                <span className="line-number text-gray-400 select-none">
                   {lineNumber.toString().padStart(lineNumberWidth, ' ')}
                 </span>
                 <span className="line-content">{line}</span>
