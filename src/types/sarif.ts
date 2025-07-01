@@ -111,6 +111,7 @@ export interface Violation {
   endColumn?: number;
   fileUri: string;
   snippet?: string;
+  artifactIndex?: number;
 }
 
 export interface FileViolations {
@@ -125,6 +126,12 @@ export interface SarifData {
     errorCount: number;
     warningCount: number;
     infoCount: number;
+    noteCount: number;
+    noneCount: number;
     averageViolationsPerFile: number;
+    mostCommonRules: [string, number][];
+    filesWithMostViolations: [string, number][];
+    totalFiles: number;
+    totalViolations: number;
   };
 } 
