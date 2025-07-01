@@ -2,11 +2,18 @@ import fs from 'fs/promises';
 import path from 'path';
 import { SarifReport, SarifData, Violation, FileViolations, SarifArtifact } from '../types/sarif.js';
 import { validateSarifFile } from '../utils/validators.js';
+import { loadArtifactContent, validateSourceDirectory } from '../utils/artifact-loader.js';
+
+export interface SarifParseOptions {
+  sourceDir?: string;
+  includeSnippets?: boolean;
+  verbose?: boolean;
+}
 
 /**
  * Parse SARIF file and extract violations grouped by file
  */
-export async function parseSarifFile(filePath: string): Promise<SarifData> {
+export async function parseSarifFile(filePath: string, options: SarifParseOptions = {}): Promise<SarifData> {
   // Validate the SARIF file first
   await validateSarifFile(filePath);
   
@@ -62,8 +69,10 @@ export async function parseSarifFile(filePath: string): Promise<SarifData> {
     }
   }
   
-  // Attach code snippets to each violation
-  await attachCodeSnippets(fileViolations, path.dirname(filePath), allArtifacts);
+  // Attach code snippets to each violation if enabled
+  if (options.includeSnippets !== false) {
+    await attachCodeSnippets(fileViolations, path.dirname(filePath), allArtifacts, options);
+  }
   
   // Calculate statistics
   const files = Object.keys(fileViolations).sort();
@@ -85,39 +94,81 @@ export async function parseSarifFile(filePath: string): Promise<SarifData> {
 async function attachCodeSnippets(
   fileViolations: FileViolations, 
   basePath: string, 
-  artifacts: Map<number, SarifArtifact>
+  artifacts: Map<number, SarifArtifact>,
+  options: SarifParseOptions
 ): Promise<void> {
   for (const [fileUri, violations] of Object.entries(fileViolations)) {
     let lines: string[] | null = null;
+    let loadError: string | null = null;
     
-    // Try to get content from artifacts first
+    // Step 1: Try to get content from embedded artifacts first
     for (const violation of violations) {
       if (violation.artifactIndex !== undefined && artifacts.has(violation.artifactIndex)) {
         const artifact = artifacts.get(violation.artifactIndex)!;
         if (artifact.contents?.text) {
           lines = artifact.contents.text.split(/\r?\n/);
+          if (options.verbose) {
+            console.log(`📄 Using embedded content for ${fileUri}`);
+          }
           break;
         }
       }
     }
     
-    // If no artifact content, try reading from file system
+    // Step 2: If no embedded content, try to find by URI in artifacts
     if (!lines) {
-      const absPath = path.join(basePath, fileUri);
-      try {
-        const content = await fs.readFile(absPath, 'utf8');
-        lines = content.split(/\r?\n/);
-      } catch {
-        // File not found or not readable, skip snippet generation
-        lines = null;
+      for (const [index, artifact] of artifacts.entries()) {
+        if (artifact.location?.uri === fileUri && artifact.contents?.text) {
+          lines = artifact.contents.text.split(/\r?\n/);
+          if (options.verbose) {
+            console.log(`📄 Using embedded content by URI for ${fileUri}`);
+          }
+          break;
+        }
       }
     }
     
+    // Step 3: If no embedded content, try loading from file system
+    if (!lines) {
+      const sourceDir = options.sourceDir || basePath;
+      
+      // Validate source directory if provided
+      if (options.sourceDir && !(await validateSourceDirectory(options.sourceDir))) {
+        loadError = `Source directory not found or not accessible: ${options.sourceDir}`;
+        if (options.verbose) {
+          console.log(`⚠️  ${loadError}`);
+        }
+      } else {
+        try {
+          const result = await loadArtifactContent(fileUri, sourceDir);
+          if (result.success && result.content) {
+            lines = result.content.split(/\r?\n/);
+            if (options.verbose) {
+              console.log(`📄 Loaded content from file system: ${result.filePath}`);
+            }
+          } else {
+            loadError = result.error || 'Failed to load file content';
+            if (options.verbose) {
+              console.log(`⚠️  Failed to load ${fileUri}: ${loadError}`);
+            }
+          }
+        } catch (error) {
+          loadError = error instanceof Error ? error.message : 'Unknown error loading file';
+          if (options.verbose) {
+            console.log(`⚠️  Error loading ${fileUri}: ${loadError}`);
+          }
+        }
+      }
+    }
+    
+    // Step 4: Generate snippets for all violations in this file
     for (const violation of violations) {
       if (lines) {
         violation.snippet = generateCodeSnippet(lines, violation);
       } else {
-        violation.snippet = '[Source file not found]';
+        violation.snippet = loadError 
+          ? `[Source file not found: ${loadError}]`
+          : '[Source file not found]';
       }
     }
   }

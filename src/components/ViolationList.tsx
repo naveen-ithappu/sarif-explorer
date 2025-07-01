@@ -82,17 +82,15 @@ export const ViolationList: React.FC<ViolationListProps> = ({ file, violations }
                 </div>
               </div>
               
-              {expandedViolations.has(index) && (
-                <div id={`violation-content-${index}`} className="violation-content px-8 pb-6 bg-gray-50">
-                  {violation.snippet && (
-                    <CodeSnippet 
-                      code={violation.snippet}
-                      language="text"
-                      highlightLine={violation.line}
-                    />
-                  )}
-                </div>
-              )}
+              <div id={`violation-content-${index}`} className="violation-content px-8 pb-6 bg-gray-50" style={{ display: 'none' }}>
+                {violation.snippet && (
+                  <CodeSnippet 
+                    code={violation.snippet}
+                    language="text"
+                    highlightLine={violation.line}
+                  />
+                )}
+              </div>
             </div>
           ))}
         </div>

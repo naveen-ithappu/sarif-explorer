@@ -2,8 +2,9 @@
 
 import { Command } from 'commander';
 import chalk from 'chalk';
+import path from 'path';
 import { generateReactHtmlReport } from '../generators/react-html-generator.js';
-import { parseSarifFile } from '../core/sarif-parser.js';
+import { parseSarifFile, SarifParseOptions } from '../core/sarif-parser.js';
 import { validateInputFile, validateOutputPath } from '../utils/validators.js';
 
 const program = new Command();
@@ -14,10 +15,12 @@ program
   .version('1.0.0')
   .option('-i, --input <path>', 'Path to SARIF report file', '')
   .option('-o, --output <path>', 'Path for generated HTML file', '')
+  .option('-s, --source-dir <path>', 'Source directory for loading artifact files (default: SARIF file directory)', '')
+  .option('--snippets', 'Include code snippets in the report', true)
   .option('-v, --verbose', 'Enable verbose logging', false)
   .action(async (options) => {
     try {
-      const { input, output, verbose } = options;
+      const { input, output, sourceDir, snippets, verbose } = options;
       
       if (verbose) {
         console.log(chalk.blue('🔍 SARIF Explorer - Starting conversion process...'));
@@ -42,12 +45,25 @@ program
       // Validate output directory is writable
       await validateOutputPath(output);
 
+      // Prepare parse options
+      const parseOptions: SarifParseOptions = {
+        sourceDir: sourceDir || undefined,
+        includeSnippets: snippets,
+        verbose
+      };
+
       if (verbose) {
         console.log(chalk.blue(`📁 Reading SARIF file: ${input}`));
+        if (sourceDir) {
+          console.log(chalk.blue(`📂 Source directory: ${sourceDir}`));
+        }
+        if (!snippets) {
+          console.log(chalk.blue(`🚫 Code snippets disabled`));
+        }
       }
 
       // Parse SARIF file
-      const sarifData = await parseSarifFile(input);
+      const sarifData = await parseSarifFile(input, parseOptions);
       
       if (verbose) {
         console.log(chalk.green(`✅ Parsed SARIF file successfully`));
