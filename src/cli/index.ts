@@ -16,7 +16,7 @@ program
   .option('-i, --input <path>', 'Path to SARIF report file', '')
   .option('-o, --output <path>', 'Path for generated HTML file', '')
   .option('-s, --source-dir <path>', 'Source directory for loading artifact files (default: SARIF file directory)', '')
-  .option('--snippets', 'Include code snippets in the report', true)
+  .option('--no-snippets', 'Exclude code snippets in the report')
   .option('-v, --verbose', 'Enable verbose logging', false)
   .action(async (options) => {
     try {
