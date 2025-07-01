@@ -4,51 +4,51 @@ import React from 'react';
 
 interface CodeSnippetProps {
   code: string;
+  language: string;
   highlightLine?: number;
   startLine?: number;
-  language?: string;
 }
 
 export const CodeSnippet: React.FC<CodeSnippetProps> = ({ 
   code, 
+  language, 
   highlightLine, 
-  startLine = 1,
-  language = 'text'
+  startLine = 1 
 }) => {
   const lines = code.split('\n');
-  
+  const maxLineNumber = startLine + lines.length - 1;
+  const lineNumberWidth = maxLineNumber.toString().length;
+
   return (
-    <div className="code-snippet">
-      <div className="code-header">
+    <div className="mt-4">
+      <div className="bg-gray-100 px-3 py-2 rounded-t-md border border-gray-200 flex justify-between items-center text-xs">
         <span className="language-badge">{language}</span>
         {highlightLine && (
-          <span className="highlight-info">
+          <span className="text-gray-600">
             Highlighted: Line {highlightLine}
           </span>
         )}
       </div>
-      <pre className="code-content">
-        <code>
+      <div className="bg-gray-900 text-gray-100 rounded-b-md border border-gray-200 overflow-x-auto">
+        <pre className="p-4 m-0 font-mono text-sm leading-relaxed">
           {lines.map((line, index) => {
             const lineNumber = startLine + index;
-            const isHighlighted = highlightLine === lineNumber;
+            const isHighlighted = lineNumber === highlightLine;
             
             return (
               <div 
-                key={index}
+                key={index} 
                 className={`code-line ${isHighlighted ? 'highlighted' : ''}`}
               >
                 <span className="line-number">
-                  {lineNumber.toString().padStart(4)}
+                  {lineNumber.toString().padStart(lineNumberWidth, ' ')}
                 </span>
-                <span className="line-content">
-                  {line}
-                </span>
+                <span className="line-content">{line}</span>
               </div>
             );
           })}
-        </code>
-      </pre>
+        </pre>
+      </div>
     </div>
   );
 }; 

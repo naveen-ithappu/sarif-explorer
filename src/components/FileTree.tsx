@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { FileViolations, Violation } from '../types/sarif';
+import { FileViolations, Violation } from '../types/sarif.js';
 
 interface FileTreeProps {
   files: string[];
@@ -22,13 +22,13 @@ const FileItem: React.FC<FileItemProps> = ({ file, violations, isSelected, onCli
   const warningCount = violations.filter(v => v.level === 'warning').length;
   const infoCount = violations.filter(v => v.level === 'info').length;
   
-  let countClass = 'error';
+  let countClass = 'bg-red-500';
   let count = errorCount;
   if (errorCount === 0 && warningCount > 0) {
-    countClass = 'warning';
+    countClass = 'bg-orange-500';
     count = warningCount;
   } else if (errorCount === 0 && warningCount === 0 && infoCount > 0) {
-    countClass = 'info';
+    countClass = 'bg-blue-500';
     count = infoCount;
   }
 
@@ -37,9 +37,9 @@ const FileItem: React.FC<FileItemProps> = ({ file, violations, isSelected, onCli
       className={`file-item ${isSelected ? 'active' : ''}`}
       onClick={onClick}
     >
-      <div className="file-item-content">
-        <div className="file-name">{file}</div>
-        <div className="file-meta">
+      <div className="px-4 py-3">
+        <div className="font-medium text-gray-900 text-sm mb-1 break-all">{file}</div>
+        <div className="flex justify-between items-center text-xs text-gray-500">
           <span>{violations.length} violations</span>
           <span className={`violation-count ${countClass}`}>{count}</span>
         </div>
@@ -65,31 +65,34 @@ export const FileTree: React.FC<FileTreeProps> = ({
 
   if (files.length === 0) {
     return (
-      <div className="sidebar">
-        <div className="sidebar-header">
-          <h3>📁 Files with Violations</h3>
+      <div className="w-80 bg-white border-r border-gray-200 flex flex-col">
+        <div className="p-4 border-b border-gray-200 bg-gray-50">
+          <h3 className="text-lg font-semibold text-gray-900 mb-3">📁 Files with Violations</h3>
         </div>
-        <div className="no-violations">
-          <h2>🎉 No Files with Issues</h2>
-          <p>All files are compliant!</p>
+        <div className="flex-1 flex items-center justify-center p-8">
+          <div className="text-center">
+            <div className="text-4xl mb-4">🎉</div>
+            <h2 className="text-xl font-semibold text-gray-900 mb-2">No Files with Issues</h2>
+            <p className="text-gray-600">All files are compliant!</p>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="sidebar">
-      <div className="sidebar-header">
-        <h3>📁 Files with Violations</h3>
+    <div className="w-80 bg-white border-r border-gray-200 flex flex-col">
+      <div className="p-4 border-b border-gray-200 bg-gray-50">
+        <h3 className="text-lg font-semibold text-gray-900 mb-3">📁 Files with Violations</h3>
         <input
           type="text"
-          className="search-input"
+          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
           placeholder="Search files..."
           value={searchTerm}
           onChange={(e) => setSearchTerm((e.target as HTMLInputElement).value)}
         />
       </div>
-      <div className="file-list">
+      <div className="flex-1 overflow-y-auto">
         {filteredFiles.map(file => (
           <FileItem
             key={file}
@@ -100,8 +103,8 @@ export const FileTree: React.FC<FileTreeProps> = ({
           />
         ))}
         {filteredFiles.length === 0 && searchTerm && (
-          <div className="no-results">
-            <p>No files match &quot;{searchTerm}&quot;</p>
+          <div className="p-4 text-center text-gray-500 italic">
+            <p>No files match "{searchTerm}"</p>
           </div>
         )}
       </div>
