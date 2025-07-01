@@ -1,0 +1,14 @@
+{
+  "indent": 2,
+  "remove": [
+    "scripts.lint",
+    "scripts.build:css",
+    "scripts.build:cli",
+    "devDependencies",
+    "packageManager"
+  ],
+  "replace": {
+    "main": "dist/cli/index.js",
+    "scripts.prepublishOnly": "echo 'Package is ready for publishing'"
+  }
+} 
