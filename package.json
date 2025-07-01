@@ -4,7 +4,7 @@
   "description": "A modern SARIF report viewer that converts SARIF files to interactive HTML reports",
   "main": "dist/index.js",
   "bin": {
-    "sarif-explorer": "./dist/cli/index.js"
+    "sarif-explorer": "./cli.js"
   },
   "type": "module",
   "scripts": {
