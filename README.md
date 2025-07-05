@@ -1,6 +1,8 @@
 # SARIF Explorer
+![npm version](https://img.shields.io/npm/v/sarif-explorer)
+![license](https://img.shields.io/github/license/naveen-ithappu/sarif-explorer)
 
-A simple, zero-dependency Node.js utility that converts SARIF reports into an interactive HTML viewer. 
+A simple, zero-dependency Node.js CLI that converts SARIF reports into interactive, shareable HTML reports with file explorer and collapsible issue details.
 
 
 ## 🚀 Features
@@ -9,7 +11,7 @@ A simple, zero-dependency Node.js utility that converts SARIF reports into an in
 - Clean, minimalist interface
 - Light theme with subtle shadows
 - Responsive design for all screen sizes
-- Color-coded violation types
+- Color-coded issue types (warnings, errors, vulnerabilities)
 
 ### 2. Interactive File Tree
 - Expandable/collapsible file structure
@@ -64,24 +66,14 @@ npm install --save-dev sarif-explorer
 
 ## 👀 Screenshot
 
-<div style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; margin: 20px 0;">
+![ESLint Report Example](examples/screenshots/eslint-sample.png)
+*ESLint analysis with syntax highlighting and file navigation*
 
-<div style="flex: 1; min-width: 300px; text-align: center;">
-  <img src="examples/screenshots/eslint-sample.png" alt="ESLint Sample Report" style="max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-  <p style="margin-top: 10px; font-style: italic; color: #666;">ESLint analysis with syntax highlighting and file navigation</p>
-</div>
+![TypeScript Report Example](examples/screenshots/typescript-sample.png)
+*TypeScript compiler analysis with type checking issues*
 
-<div style="flex: 1; min-width: 300px; text-align: center;">
-  <img src="examples/screenshots/typescript-sample.png" alt="TypeScript Sample Report" style="max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-  <p style="margin-top: 10px; font-style: italic; color: #666;">TypeScript compiler analysis with type checking issues</p>
-</div>
-
-<div style="flex: 1; min-width: 300px; text-align: center;">
-  <img src="examples/screenshots/security-sample.png" alt="Security Sample Report" style="max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-  <p style="margin-top: 10px; font-style: italic; color: #666;">Security analysis with critical vulnerability highlighting</p>
-</div>
-
-</div>
+![Security Report Example](examples/screenshots/security-sample.png)
+*Security analysis with critical vulnerability highlighting*
 
 
 
@@ -95,11 +87,11 @@ npx sarif-explorer --help
   ___) / ___ \|  _ < | ||  _|   | |___ /  \|  __/| |__| |_| |  _ <| |___|  _ < 
  |____/_/   \_\_| \_\___|_|     |_____/_/\_\_|   |_____\___/|_| \_\_____|_| \_\
                                                                                
-Convert SARIF reports to interactive HTML viewer
+Convert SARIF reports into an interactive HTML viewer
 
 Usage: sarif-explorer [options]
 
-Convert SARIF reports to interactive HTML viewer
+Convert SARIF reports into an interactive HTML viewer
 
 Options:
   -V, --version            output the version number
@@ -122,8 +114,8 @@ Use this flag when you want to generate a lightweight report without code snippe
 ### `--source-dir <path>`
 Specify a custom source directory when your SARIF file references files relative to a different location. Use this when:
 - **Build artifacts**: SARIF files generated in CI/CD reference files from different paths
-- **Cross-platform**: Files referenced in SARIF don't match your local file structure
-- **Monorepos**: Source files are in subdirectories not reflected in the SARIF paths
+- **Cross-platform**: Referenced files in the SARIF report do not align with your local file structure
+- **Monorepos**: When your SARIF report references files in nested packages or subdirectories
 - **Custom layouts**: Your project structure differs from the analysis environment
 
 ## Integration Examples
@@ -144,7 +136,7 @@ npx serve public/
 ```yaml
 - name: Generate SARIF Report
   run: |
-    node cli.js --input eslint-report.sarif --output public/analysis.html
+    npx sarif-explorer --input eslint-report.sarif --output public/analysis.html
     
 - name: Deploy Report
   uses: peaceiris/actions-gh-pages@v3
@@ -160,7 +152,7 @@ npx serve public/
 nodemon --watch src/ --exec "npm run build:cli && node cli.js --input test.sarif --output report.html"
 ```
 
-## Quick Start
+## 🚀 Quick Start
 
 The [`examples/`](./examples/) folder contains sample SARIF files and generated HTML reports to demonstrate SARIF Explorer's capabilities. 
 
@@ -196,22 +188,13 @@ start examples/eslint-sample.html
 ```
 
 
-## Browser Compatibility
-
-The generated HTML reports work in all modern browsers:
-- **Chrome**: 90+
-- **Firefox**: 88+
-- **Safari**: 14+
-- **Edge**: 90+
-
-
 ## Customization
 
 The tool supports customization through:
 - CSS variables for theming
 - Configurable violation colors
 - Customizable layout options
-- Extensible component system
+- Extensible component system for advanced customization
 
 
 ## Troubleshooting
@@ -230,10 +213,12 @@ The tool supports customization through:
 DEBUG=sarif-explorer node cli.js --input file.sarif --output report.html
 ```
 
+If you encounter unexpected behavior, please open an issue on GitHub with relevant details.
+
 
 ## 🤝 Contributing
 
-PRs, feature suggestions, and improvements welcome! Check [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+PRs, feature suggestions, and improvements are welcome! Please open an issue or check [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 
 
