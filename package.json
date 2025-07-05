@@ -1,7 +1,7 @@
 {
   "name": "sarif-explorer",
-  "version": "1.0.0",
-  "description": "A modern SARIF report viewer that converts SARIF files to interactive HTML reports",
+  "version": "0.1.0",
+  "description": "A modern SARIF report viewer that converts SARIF files into interactive, shareable HTML reports with file explorer, collapsible issue lists, and code snippets.",
   "main": "dist/index.js",
   "bin": {
     "sarif-explorer": "./cli.js"
@@ -17,13 +17,41 @@
   },
   "keywords": [
     "sarif",
-    "static-analysis",
-    "security",
-    "code-quality",
+    "sarif-viewer",
+    "sarif-parser",
+    "sarif-converter",
+    "sarif-to-html",
     "html-report",
-    "cli"
+    "interactive-report",
+    "report-viewer",
+    "report-generator",
+    "static-analysis",
+    "static-analysis-report",
+    "security-analysis",
+    "vulnerability-report",
+    "code-quality",
+    "code-quality-report",
+    "linting-report",
+    "code-review",
+    "code-visualization",
+    "html-generator",
+    "cli-tool",
+    "command-line-tool",
+    "developer-tools",
+    "nodejs",
+    "npm-package",
+    "eslint",
+    "typescript",
+    "sonarqube",
+    "semgrep",
+    "codeql",
+    "security-scanning",
+    "static-code-analysis",
+    "developer-experience",
+    "dx-tools",
+    "frontend-tools"
   ],
-  "author": "Your Name",
+  "author": "Naveen Ithappu",
   "license": "MIT",
   "dependencies": {
     "@tailwindcss/typography": "^0.5.16",
@@ -55,11 +83,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/sarif-explorer.git"
+    "url": "https://github.com/naveen-ithappu/sarif-explorer.git"
   },
   "bugs": {
-    "url": "https://github.com/yourusername/sarif-explorer/issues"
+    "url": "https://github.com/naveen-ithappu/sarif-explorer/issues"
   },
-  "homepage": "https://github.com/yourusername/sarif-explorer#readme",
-  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
+  "homepage": "https://github.com/naveen-ithappu/sarif-explorer#readme"
 }
