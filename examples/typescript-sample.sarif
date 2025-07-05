@@ -1,0 +1,123 @@
+{
+  "$schema": "https://schemastore.azurewebsites.net/schemas/json/sarif-2.1.0-rtm.5.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "TypeScript",
+          "version": "5.2.2",
+          "informationUri": "https://www.typescriptlang.org"
+        }
+      },
+      "results": [
+        {
+          "ruleId": "TS2322",
+          "level": "error",
+          "message": {
+            "text": "Type 'string' is not assignable to type 'number'."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/types/user.ts"
+                },
+                "region": {
+                  "startLine": 25,
+                  "startColumn": 5,
+                  "endLine": 25,
+                  "endColumn": 15
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "TS2339",
+          "level": "error",
+          "message": {
+            "text": "Property 'email' does not exist on type 'User'."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/services/auth.ts"
+                },
+                "region": {
+                  "startLine": 18,
+                  "startColumn": 15,
+                  "endLine": 18,
+                  "endColumn": 20
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "TS6133",
+          "level": "warning",
+          "message": {
+            "text": "'unusedImport' is declared but its value is never read."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/types/user.ts"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 10,
+                  "endLine": 1,
+                  "endColumn": 22
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "TS2345",
+          "level": "error",
+          "message": {
+            "text": "Argument of type 'string' is not assignable to parameter of type 'User'."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/services/auth.ts"
+                },
+                "region": {
+                  "startLine": 12,
+                  "startColumn": 15,
+                  "endLine": 12,
+                  "endColumn": 25
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "artifacts": [
+        {
+          "location": {
+            "uri": "src/types/user.ts"
+          },
+          "contents": {
+            "text": "import { unusedImport } from './utils';\n\nexport interface User {\n  id: number;\n  name: string;\n  age: number;\n  isActive: boolean;\n  createdAt: Date;\n  preferences: {\n    theme: 'light' | 'dark';\n    language: string;\n    notifications: boolean;\n  };\n}\n\nexport interface UserProfile extends User {\n  avatar: string;\n  bio: string;\n  socialLinks: {\n    twitter?: string;\n    github?: string;\n    linkedin?: string;\n  };\n}\n\nexport const createUser = (data: Partial<User>): User => {\n  const user: User = {\n    id: 'invalid-id', // Type error: string assigned to number\n    name: data.name || '',\n    age: data.age || 0,\n    isActive: data.isActive || false,\n    createdAt: new Date(),\n    preferences: {\n      theme: 'light',\n      language: 'en',\n      notifications: true\n    }\n  };\n  \n  return user;\n};\n\nexport const validateUser = (user: User): boolean => {\n  return user.id > 0 && user.name.length > 0;\n};"
+          }
+        },
+        {
+          "location": {
+            "uri": "src/services/auth.ts"
+          },
+          "contents": {
+            "text": "import { User, UserProfile } from '../types/user';\n\nexport class AuthService {\n  private users: User[] = [];\n  \n  public async login(credentials: { username: string; password: string }): Promise<User> {\n    // Simulate API call\n    const user = await this.findUserByCredentials(credentials);\n    return user;\n  }\n  \n  public async register(userData: string): Promise<User> { // Type error: should be User\n    const newUser = createUser(userData);\n    this.users.push(newUser);\n    return newUser;\n  }\n  \n  public async getUserProfile(userId: number): Promise<UserProfile> {\n    const user = this.users.find(u => u.id === userId);\n    if (!user) {\n      throw new Error('User not found');\n    }\n    \n    // Type error: accessing non-existent property\n    const email = user.email;\n    \n    return {\n      ...user,\n      avatar: '',\n      bio: '',\n      socialLinks: {}\n    };\n  }\n  \n  private async findUserByCredentials(credentials: { username: string; password: string }): Promise<User> {\n    // Mock implementation\n    return {\n      id: 1,\n      name: credentials.username,\n      age: 25,\n      isActive: true,\n      createdAt: new Date(),\n      preferences: {\n        theme: 'light',\n        language: 'en',\n        notifications: true\n      }\n    };\n  }\n}\n\nconst createUser = (data: any): any => {\n  return data;\n};"
+          }
+        }
+      ]
+    }
+  ]
+} 

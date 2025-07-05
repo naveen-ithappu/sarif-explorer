@@ -3,9 +3,20 @@
 import { Command } from 'commander';
 import chalk from 'chalk';
 import path from 'path';
+import figlet from 'figlet';
 import { generateReactHtmlReport } from '../generators/react-html-generator.js';
 import { parseSarifFile, SarifParseOptions } from '../core/sarif-parser.js';
 import { validateInputFile, validateOutputPath } from '../utils/validators.js';
+
+// Banner function
+function displayBanner() {
+  console.log(chalk.cyan(figlet.textSync('SARIF EXPLORER', {
+    font: 'Standard',
+    horizontalLayout: 'default',
+    verticalLayout: 'default'
+  })));
+  console.log(chalk.gray('Convert SARIF reports to interactive HTML viewer\n'));
+}
 
 const program = new Command();
 
@@ -91,5 +102,8 @@ program
       process.exit(1);
     }
   });
+  
+// Display banner
+displayBanner();
 
 program.parse(); 

@@ -6,7 +6,7 @@
       "tool": {
         "driver": {
           "name": "ESLint",
-          "version": "8.0.0",
+          "version": "8.45.0",
           "informationUri": "https://eslint.org"
         }
       },

@@ -1,0 +1,183 @@
+{
+  "$schema": "https://schemastore.azurewebsites.net/schemas/json/sarif-2.1.0-rtm.5.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "SonarQube",
+          "version": "10.2.0",
+          "informationUri": "https://www.sonarqube.org"
+        }
+      },
+      "results": [
+        {
+          "ruleId": "S5146",
+          "level": "error",
+          "message": {
+            "text": "Make sure using a hardcoded IP address is safe here."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/api/database.js"
+                },
+                "region": {
+                  "startLine": 8,
+                  "startColumn": 15,
+                  "endLine": 8,
+                  "endColumn": 25
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "S2068",
+          "level": "error",
+          "message": {
+            "text": "Make sure this hardcoded credential is safe here."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/api/database.js"
+                },
+                "region": {
+                  "startLine": 12,
+                  "startColumn": 15,
+                  "endLine": 12,
+                  "endColumn": 35
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "S5146",
+          "level": "warning",
+          "message": {
+            "text": "Make sure using a hardcoded IP address is safe here."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/config/settings.py"
+                },
+                "region": {
+                  "startLine": 15,
+                  "startColumn": 8,
+                  "endLine": 15,
+                  "endColumn": 18
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "S3277",
+          "level": "warning",
+          "message": {
+            "text": "Make sure this weak hash algorithm is not used in a sensitive context."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/utils/crypto.py"
+                },
+                "region": {
+                  "startLine": 22,
+                  "startColumn": 5,
+                  "endLine": 22,
+                  "endColumn": 15
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "S5146",
+          "level": "warning",
+          "message": {
+            "text": "Make sure using a hardcoded IP address is safe here."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/config/settings.py"
+                },
+                "region": {
+                  "startLine": 28,
+                  "startColumn": 12,
+                  "endLine": 28,
+                  "endColumn": 22
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "S1134",
+          "level": "info",
+          "message": {
+            "text": "Fix this deprecation warning."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/utils/helpers.java"
+                },
+                "region": {
+                  "startLine": 45,
+                  "startColumn": 5,
+                  "endLine": 45,
+                  "endColumn": 15
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "artifacts": [
+        {
+          "location": {
+            "uri": "src/api/database.js"
+          },
+          "contents": {
+            "text": "const mysql = require('mysql');\n\nclass DatabaseConnection {\n  constructor() {\n    this.connection = mysql.createConnection({\n      host: '192.168.1.100', // Security issue: hardcoded IP\n      user: 'root',\n      password: 'admin123', // Security issue: hardcoded password\n      database: 'myapp'\n    });\n  }\n  \n  async query(sql, params) {\n    return new Promise((resolve, reject) => {\n      this.connection.query(sql, params, (error, results) => {\n        if (error) reject(error);\n        else resolve(results);\n      });\n    });\n  }\n  \n  async getUserById(id) {\n    // SQL injection vulnerability\n    const sql = `SELECT * FROM users WHERE id = ${id}`;\n    return this.query(sql);\n  }\n}\n\nmodule.exports = DatabaseConnection;"
+          }
+        },
+        {
+          "location": {
+            "uri": "src/config/settings.py"
+          },
+          "contents": {
+            "text": "import os\nfrom pathlib import Path\n\n# Database configuration\nDATABASE_CONFIG = {\n    'host': 'localhost',\n    'port': 5432,\n    'name': 'myapp_db',\n    'user': os.getenv('DB_USER', 'postgres'),\n    'password': os.getenv('DB_PASSWORD', ''),\n    'server': '192.168.1.50'  # Security issue: hardcoded IP\n}\n\n# Redis configuration\nREDIS_CONFIG = {\n    'host': 'localhost',\n    'port': 6379,\n    'db': 0,\n    'password': os.getenv('REDIS_PASSWORD', ''),\n    'server_ip': '10.0.0.100'  # Security issue: hardcoded IP\n}\n\n# Security settings\nSECURITY_CONFIG = {\n    'secret_key': os.getenv('SECRET_KEY', 'dev-secret-key'),\n    'algorithm': 'HS256',\n    'access_token_expire_minutes': 30,\n    'refresh_token_expire_days': 7\n}\n\n# Logging configuration\nLOGGING_CONFIG = {\n    'level': 'INFO',\n    'format': '%(asctime)s - %(name)s - %(levelname)s - %(message)s',\n    'file': 'app.log'\n}"
+          }
+        },
+        {
+          "location": {
+            "uri": "src/utils/crypto.py"
+          },
+          "contents": {
+            "text": "import hashlib\nimport base64\nfrom cryptography.fernet import Fernet\nfrom cryptography.hazmat.primitives import hashes\nfrom cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC\n\ndef hash_password(password: str) -> str:\n    \"\"\"Hash a password using SHA-256\"\"\"\n    return hashlib.sha256(password.encode()).hexdigest()\n\ndef weak_hash_password(password: str) -> str:\n    \"\"\"Hash a password using MD5 (weak)\"\"\"\n    return hashlib.md5(password.encode()).hexdigest()  # Security issue: weak hash\n\ndef encrypt_data(data: str, key: bytes) -> str:\n    \"\"\"Encrypt data using Fernet\"\"\"\n    f = Fernet(key)\n    encrypted_data = f.encrypt(data.encode())\n    return base64.b64encode(encrypted_data).decode()\n\ndef decrypt_data(encrypted_data: str, key: bytes) -> str:\n    \"\"\"Decrypt data using Fernet\"\"\"\n    f = Fernet(key)\n    decoded_data = base64.b64decode(encrypted_data.encode())\n    decrypted_data = f.decrypt(decoded_data)\n    return decrypted_data.decode()\n\ndef generate_key(password: str, salt: bytes) -> bytes:\n    \"\"\"Generate encryption key from password\"\"\"\n    kdf = PBKDF2HMAC(\n        algorithm=hashes.SHA256(),\n        length=32,\n        salt=salt,\n        iterations=100000,\n    )\n    return base64.urlsafe_b64encode(kdf.derive(password.encode()))"
+          }
+        },
+        {
+          "location": {
+            "uri": "src/utils/helpers.java"
+          },
+          "contents": {
+            "text": "import java.security.MessageDigest;\nimport java.security.NoSuchAlgorithmException;\nimport java.util.Base64;\nimport java.util.Date;\nimport java.text.SimpleDateFormat;\n\npublic class SecurityHelpers {\n    \n    public static String hashPassword(String password) {\n        try {\n            MessageDigest md = MessageDigest.getInstance(\"SHA-256\");\n            byte[] hash = md.digest(password.getBytes());\n            return Base64.getEncoder().encodeToString(hash);\n        } catch (NoSuchAlgorithmException e) {\n            throw new RuntimeException(\"SHA-256 not available\", e);\n        }\n    }\n    \n    public static String generateToken(String userId) {\n        String timestamp = new SimpleDateFormat(\"yyyy-MM-dd HH:mm:ss\").format(new Date());\n        return Base64.getEncoder().encodeToString((userId + \":\" + timestamp).getBytes());\n    }\n    \n    public static boolean validateToken(String token) {\n        try {\n            String decoded = new String(Base64.getDecoder().decode(token));\n            String[] parts = decoded.split(\":\");\n            return parts.length == 2;\n        } catch (Exception e) {\n            return false;\n        }\n    }\n    \n    @SuppressWarnings(\"deprecation\")  // Security issue: deprecated method\n    public static String getSystemInfo() {\n        return System.getProperty(\"os.name\") + \" \" + System.getProperty(\"os.version\");\n    }\n    \n    public static String sanitizeInput(String input) {\n        if (input == null) return \"\";\n        return input.replaceAll(\"[<>'\"]\", \"\");\n    }\n}"
+          }
+        }
+      ]
+    }
+  ]
+} 
